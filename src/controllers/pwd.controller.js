@@ -101,6 +101,22 @@ const getCardsById = async (req, res) => {
     }
 }
 
+const getUAPWD = async (req, res) => {
+    console.log("req:",req.params);
+    try {
+        const { userpwd } = req.params;
+        const connection = await getConnection();
+        const result = await connection
+            .request()
+            .input('userpwd', userpwd)
+            .query(querys.getUserAppPWD);
+        res.json(result.recordset[0]);
+    } catch (error) {
+        res.status(500);
+        res.send(error.message);
+    }
+}
+
 // post
 const addPwd = async (req, res) => {
     console.log("REQ:",req);
@@ -254,6 +270,7 @@ export const methods = {
     getByNameBank,
     getCards,
     getCardsById,
+    getUAPWD,
     addPwd,
     addCard,
     updatePwd,
