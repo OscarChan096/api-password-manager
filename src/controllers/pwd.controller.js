@@ -48,7 +48,7 @@ const getByUser = async (req, res) => {
         const connection = await getConnection();
         const result = await connection
             .request()
-            .input('username', username)
+            .input('username', username+"%")
             .query(querys.getByUser);
         res.json(result.recordset);
     } catch (error) {
@@ -73,7 +73,7 @@ const getByNameBank = async (req, res) => {
 }
 
 const getCards = async (req, res) => {
-    console.log(req.params);
+    //console.log(req.params);
     try {
         const connection = await getConnection();
         const result = await connection
@@ -102,7 +102,7 @@ const getCardsById = async (req, res) => {
 }
 
 const getUAPWD = async (req, res) => {
-    console.log("req:",req.params);
+    //console.log("req:",req.params);
     try {
         const { userpwd } = req.params;
         const connection = await getConnection();
@@ -119,7 +119,7 @@ const getUAPWD = async (req, res) => {
 
 // post
 const addPwd = async (req, res) => {
-    console.log("REQ:",req);
+    //console.log("REQ:",req);
     const { TITLE, USERNAME, USERPASSWORD, FECHMODIF } = req.body;
 
     if (TITLE == null || USERPASSWORD == null) {
@@ -143,8 +143,8 @@ const addPwd = async (req, res) => {
 }
 
 const addCard = async (req, res) => {
-    const { bank_name, account_number, date, cvv, nip, app_user_name, app_password, type } = req.body;
-    console.log(`********** bank: ${bank_name} | account: ${account_number} | date: ${date} | cvv: ${cvv} | nip: ${nip} | app_user_name: ${app_user_name} | app_password: ${app_password} | type: ${type} ********`);
+    const { account_number, date, cvv, nip, app_user_name, app_password, type, id_bank } = req.body;
+    //console.log(`********** account: ${account_number} | date: ${date} | cvv: ${cvv} | nip: ${nip} | app_user_name: ${app_user_name} | app_password: ${app_password} | type: ${type} | id_bank: ${id_bank}********`);
     if (bank_name == null || account_number == null || date == null || cvv == null || nip == null) {
         return res.status(400).json({ msg: 'Bad request.' });
     }
@@ -155,7 +155,7 @@ const addCard = async (req, res) => {
         const connection = await getConnection();
         await connection
             .request()
-            .input('bank_name', sql.VarChar, bank_name)
+            //.input('bank_name', sql.VarChar, bank_name)
             .input('account_number', sql.VarChar, account_number)
             .input('date', sql.VarChar, date)
             .input('cvv', sql.VarChar, cvv)
@@ -163,8 +163,9 @@ const addCard = async (req, res) => {
             .input('app_user_name', sql.VarChar, app_user_name)
             .input('app_password', sql.VarChar, app_password)
             .input('type', sql.VarChar, type)
+            .input('id_bank', sql.VarChar, id_bank)
             .query(querys.addCard);
-        res.json({ bank_name, account_number, date, cvv, nip, app_user_name, app_password, type })
+        res.json({ account_number, date, cvv, nip, app_user_name, app_password, type, id_bank })
     } catch (error) {
         res.status(500);
         res.send(error.message);
@@ -198,8 +199,8 @@ const updatePwd = async (req,res) => {
 
 const updateCard = async (req,res) => {
     const {id} = req.params;
-    const { bank_name, account_number, date, cvv, nip, app_user_name, app_password, type } = req.body;
-    console.log(`********** ID: ${id} | bank: ${bank_name} | account: ${account_number} | date: ${date} | cvv: ${cvv} | nip: ${nip} | app_user_name: ${app_user_name} | app_password: ${app_password} | type: ${type} ********`);
+    const { account_number, date, cvv, nip, app_user_name, app_password, type, id_bank } = req.body;
+    console.log(`********** account: ${account_number} | date: ${date} | cvv: ${cvv} | nip: ${nip} | app_user_name: ${app_user_name} | app_password: ${app_password} | type: ${type} | id_bank: ${id_bank}********`);
     if (bank_name == null || account_number == null || date == null || cvv == null || nip == null) {
         return res.status(400).json({ msg: 'Bad request.' });
     }
@@ -211,7 +212,7 @@ const updateCard = async (req,res) => {
         await connection
             .request()
             .input('id',id)
-            .input('bank_name', sql.VarChar, bank_name)
+            // .input('bank_name', sql.VarChar, bank_name)
             .input('account_number', sql.VarChar, account_number)
             .input('date', sql.VarChar, date)
             .input('cvv', sql.VarChar, cvv)
@@ -219,8 +220,9 @@ const updateCard = async (req,res) => {
             .input('app_user_name', sql.VarChar, app_user_name)
             .input('app_password', sql.VarChar, app_password)
             .input('type', sql.Int, type)
+            .input('id_bank', sql.VarChar, id_bank)
             .query(querys.updateCard);
-        res.json({ bank_name, account_number, date, cvv, nip, app_user_name, app_password, type })
+        res.json({ account_number, date, cvv, nip, app_user_name, app_password, type, id_bank})
     } catch (error) {
         res.status(500);
         res.send(error.message);

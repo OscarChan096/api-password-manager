@@ -13,7 +13,7 @@ export const querys = {
     addPwd:
         'INSERT INTO dataPass (title,username,userpassword,fechmodif) VALUES (@title,@username,@userpassword,@fechmodif)',
     addCard:
-        'INSERT INTO dataCards (bank_name,account_number,date,cvv,nip,app_user_name,app_password,type) VALUES (@bank_name,@account_number,@date,@cvv,@nip,@app_user_name,@app_password,@type)',
+        'INSERT INTO dataCards (account_number,date,cvv,nip,app_user_name,app_password,type,id_bank) VALUES (@account_number,@date,@cvv,@nip,@app_user_name,@app_password,@type,@id_bank)',
     addUserAppPWD: 'INSERT INTO credenciales (userpwd,passpwd) VALUES(@userpwd,@passpwd)',
 
     // metodos put
