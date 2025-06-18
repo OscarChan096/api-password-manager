@@ -44,11 +44,12 @@ const getByTitle = async (req, res) => {
 
 const getByUser = async (req, res) => {
     try {
-        const { username } = req.params;
+        console.log("getByUser > ",req.params);
+        const { user } = req.params;
         const connection = await getConnection();
         const result = await connection
             .request()
-            .input('username', username+"%")
+            .input('username', user+"%")
             .query(querys.getByUser);
         res.json(result.recordset);
     } catch (error) {
@@ -144,12 +145,17 @@ const addPwd = async (req, res) => {
 
 const addCard = async (req, res) => {
     const { account_number, date, cvv, nip, app_user_name, app_password, type, id_bank } = req.body;
-    //console.log(`********** account: ${account_number} | date: ${date} | cvv: ${cvv} | nip: ${nip} | app_user_name: ${app_user_name} | app_password: ${app_password} | type: ${type} | id_bank: ${id_bank}********`);
-    if (bank_name == null || account_number == null || date == null || cvv == null || nip == null) {
+    let id_bank_aux = id_bank;
+    let type_aux = type;
+    console.log(`# account: ${account_number} | date: ${date} | cvv: ${cvv} | nip: ${nip} | app_user_name: ${app_user_name} | app_password: ${app_password} | type: ${type} | id_bank: ${id_bank}********`);
+    //if (bank_name == null || account_number == null || date == null || cvv == null || nip == null) {
+    if (account_number == null || date == null || cvv == null || nip == null) {
         return res.status(400).json({ msg: 'Bad request.' });
     }
 
-    if (type == null) type = 0;
+    if (type_aux == "" || type_aux.length == 0) type_aux = 1;
+
+    if (id_bank_aux == "" || id_bank_aux.length == 0) id_bank_aux = 1;
 
     try {
         const connection = await getConnection();
@@ -162,13 +168,14 @@ const addCard = async (req, res) => {
             .input('nip', sql.VarChar, nip)
             .input('app_user_name', sql.VarChar, app_user_name)
             .input('app_password', sql.VarChar, app_password)
-            .input('type', sql.VarChar, type)
-            .input('id_bank', sql.VarChar, id_bank)
+            .input('type', sql.Int, parseInt(type_aux))
+            .input('id_bank', sql.Int, parseInt(id_bank_aux))
             .query(querys.addCard);
         res.json({ account_number, date, cvv, nip, app_user_name, app_password, type, id_bank })
     } catch (error) {
         res.status(500);
         res.send(error.message);
+        console.log("Error in addCard:", error.message);
     }
 }
 
@@ -200,12 +207,16 @@ const updatePwd = async (req,res) => {
 const updateCard = async (req,res) => {
     const {id} = req.params;
     const { account_number, date, cvv, nip, app_user_name, app_password, type, id_bank } = req.body;
+    let id_bank_aux = id_bank;
+    let type_aux = type;
     console.log(`********** account: ${account_number} | date: ${date} | cvv: ${cvv} | nip: ${nip} | app_user_name: ${app_user_name} | app_password: ${app_password} | type: ${type} | id_bank: ${id_bank}********`);
-    if (bank_name == null || account_number == null || date == null || cvv == null || nip == null) {
+    if (account_number == null || date == null || cvv == null || nip == null) {
         return res.status(400).json({ msg: 'Bad request.' });
     }
 
-    if (type == null) type = 0;
+    if (type_aux == "" || type_aux.length == 0) type_aux = 1;
+
+    if (id_bank_aux == "" || id_bank_aux.length == 0) id_bank_aux = 1;
 
     try {
         const connection = await getConnection();
@@ -219,13 +230,14 @@ const updateCard = async (req,res) => {
             .input('nip', sql.VarChar, nip)
             .input('app_user_name', sql.VarChar, app_user_name)
             .input('app_password', sql.VarChar, app_password)
-            .input('type', sql.Int, type)
-            .input('id_bank', sql.VarChar, id_bank)
+            .input('type', sql.Int, parseInt(type_aux))
+            .input('id_bank', sql.Int, parseInt(id_bank_aux))
             .query(querys.updateCard);
         res.json({ account_number, date, cvv, nip, app_user_name, app_password, type, id_bank})
     } catch (error) {
         res.status(500);
         res.send(error.message);
+        console.log("Error in updateCard:", error.message);
     }
 }
 

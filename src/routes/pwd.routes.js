@@ -2,7 +2,7 @@ import {Router} from 'express';
 import {methods as pwdController} from './../controllers/pwd.controller';
 
 const router = Router();
-
+// http://192.168.1.119:5000/api/pwd/
 // get data
 router.get('/',pwdController.getPwds);
 router.get('/:id',pwdController.getById);

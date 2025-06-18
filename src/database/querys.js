@@ -20,7 +20,7 @@ export const querys = {
     updatePwd:
         'UPDATE dataPass SET title = @title, username = @username, userpassword = @userpassword, fechmodif = @fechmodif WHERE id = @id',
     updateCard:
-        'UPDATE dataCards SET bank_name = @bank_name, account_number = @account_number, date = @date, cvv = @cvv, nip = @nip, app_user_name = @app_user_name, app_password = @app_password, type = @type WHERE id = @id',
+        'UPDATE dataCards SET id_bank = @id_bank, account_number = @account_number, date = @date, cvv = @cvv, nip = @nip, app_user_name = @app_user_name, app_password = @app_password, type = @type WHERE id = @id',
     updateUserAppPWD: 'UPDATE credenciales SET userpwd = @userpwd, passpwd = @passpwd WHERE id = @id',
     
     deletePwd: 'DELETE FROM dataPass WHERE id = @id',
