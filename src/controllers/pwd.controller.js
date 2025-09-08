@@ -12,6 +12,19 @@ const getPwds = async (req, res) => {
     }
 }
 
+const getPING = async (req, res) => {
+    try {
+        const connection = await getConnection();
+        const result = await connection.request().query(querys.getPING);
+        res.json(result.recordset);
+        console.log("PING result:", result.recordset);
+    } catch (error) {
+        res.status(500);
+        res.send(error.message);
+    }
+}
+
+
 const getById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -285,6 +298,7 @@ export const methods = {
     getCards,
     getCardsById,
     getUAPWD,
+    getPING,
     addPwd,
     addCard,
     updatePwd,

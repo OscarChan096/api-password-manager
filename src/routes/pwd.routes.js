@@ -12,6 +12,7 @@ router.get('/bank/card/:name',pwdController.getByNameBank);
 router.get('/bank/cards',pwdController.getCards);
 router.get('/bank/card/:id',pwdController.getCardsById);
 router.get('/uapwd/:userpwd',pwdController.getUAPWD);
+router.get('/get/ping',pwdController.getPING);
 
 // add data
 router.post('/',pwdController.addPwd);

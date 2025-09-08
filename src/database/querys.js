@@ -8,6 +8,7 @@ export const querys = {
     getCards: 'SELECT * FROM dataCards',
     getCardsByIdCards: 'SELECT * FROM dataCards WHERE id = @id',
     getUserAppPWD: 'SELECT * FROM credenciales WHERE userpwd LIKE @userpwd',
+    getPING: 'SELECT * FROM ping_test',
 
     // metodos post
     addPwd:
