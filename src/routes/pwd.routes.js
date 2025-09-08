@@ -13,10 +13,12 @@ router.get('/bank/cards',pwdController.getCards);
 router.get('/bank/card/:id',pwdController.getCardsById);
 router.get('/uapwd/:userpwd',pwdController.getUAPWD);
 router.get('/get/ping',pwdController.getPING);
+router.get('/estatus/pwd',pwdController.getEstatusPWD);
 
 // add data
 router.post('/',pwdController.addPwd);
 router.post('/bank/card',pwdController.addCard);
+router.post('/estatus/pwd',pwdController.addEstatusPWD);
 
 // update data
 router.put('/:id',pwdController.updatePwd);
@@ -25,5 +27,7 @@ router.put('/bank/card/:id',pwdController.updateCard);
 // delete data
 router.delete('/:id',pwdController.deletePwd);
 router.delete('/bank/card/:id',pwdController.deleteCard);
+router.delete('/uapwd/:id',pwdController.delUAPWD);
+router.delete('/estatus/pwd/:id_pwd',pwdController.deleteEstatusPWD);
 
 export default router;

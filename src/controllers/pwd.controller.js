@@ -131,6 +131,17 @@ const getUAPWD = async (req, res) => {
     }
 }
 
+const getEstatusPWD = async (req, res) => {
+    try {
+        const connection = await getConnection();
+        const result = await connection.request().query(querys.getEstatusPWD);
+        res.json(result.recordset);
+    } catch (error) {
+        res.status(500);
+        res.send(error.message);
+    }
+}
+
 // post
 const addPwd = async (req, res) => {
     //console.log("REQ:",req);
@@ -189,6 +200,26 @@ const addCard = async (req, res) => {
         res.status(500);
         res.send(error.message);
         console.log("Error in addCard:", error.message);
+    }
+}
+
+const addEstatusPWD = async (req, res) => {
+    //console.log("REQ:",req);
+    const { ID_PWD, NUEVO, ACTUALIZADO, ELIMINADO } = req.body;
+
+    try {
+        const connection = await getConnection();
+        await connection
+            .request()
+            .input('id_pwd', sql.Int, ID_PWD)
+            .input('nuevo', sql.VarInt, NUEVO)
+            .input('actualizado', sql.VarInt, ACTUALIZADO)
+            .input('eliminado',sql.VarInt, ELIMINADO)
+            .query(querys.addEstatusPWD);
+        res.json({ ID_PWD, NUEVO, ACTUALIZADO, ELIMINADO });
+    } catch (error) {
+        res.status(500);
+        res.send(error.message);
     }
 }
 
@@ -289,6 +320,23 @@ const deleteCard = async (req,res) =>{
     }
 }
 
+const deleteEstatusPWD = async (req,res) =>{
+    try{
+        const { id_pwd } = req.params;
+        const connection = await getConnection();
+        const result = await connection
+        .request()
+        .input('id_pwd',id_pwd)
+        .query(querys.deleteEstatusPWD);
+        
+        if(result.rowsAffected[0] === 0) return res.sendStatus(400);
+        return res.sendStatus(204);
+    }catch(error){
+        res.status(500);
+        res.send(error.message);
+    }
+}
+
 export const methods = {
     getPwds,
     getById,
@@ -299,10 +347,13 @@ export const methods = {
     getCardsById,
     getUAPWD,
     getPING,
+    getEstatusPWD,
     addPwd,
     addCard,
+    addEstatusPWD,
     updatePwd,
     updateCard,
     deletePwd,
-    deleteCard
+    deleteCard,
+    deleteEstatusPWD
 }
