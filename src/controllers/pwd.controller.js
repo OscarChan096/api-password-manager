@@ -204,7 +204,7 @@ const addCard = async (req, res) => {
 }
 
 const addEstatusPWD = async (req, res) => {
-    //console.log("REQ:",req);
+    console.log("REQ:",req.body);
     const { ID_PWD, NUEVO, ACTUALIZADO, ELIMINADO } = req.body;
 
     try {
@@ -212,9 +212,9 @@ const addEstatusPWD = async (req, res) => {
         await connection
             .request()
             .input('id_pwd', sql.Int, ID_PWD)
-            .input('nuevo', sql.VarInt, NUEVO)
-            .input('actualizado', sql.VarInt, ACTUALIZADO)
-            .input('eliminado',sql.VarInt, ELIMINADO)
+            .input('nuevo', sql.Int, NUEVO)
+            .input('actualizado', sql.Int, ACTUALIZADO)
+            .input('eliminado',sql.Int, ELIMINADO)
             .query(querys.addEstatusPWD);
         res.json({ ID_PWD, NUEVO, ACTUALIZADO, ELIMINADO });
     } catch (error) {
