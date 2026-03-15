@@ -28,6 +28,6 @@ router.put('/bank/card/:id',pwdController.updateCard);
 router.delete('/:id',pwdController.deletePwd);
 router.delete('/bank/card/:id',pwdController.deleteCard);
 //router.delete('/uapwd/:id',pwdController.delUAPWD);
-router.delete('/estatus/pwd/:id_pwd',pwdController.deleteEstatusPWD);
+router.delete('/estatus/pwd/:idpwd',pwdController.deleteEstatusPWDByIdPWD);
 
 export default router;

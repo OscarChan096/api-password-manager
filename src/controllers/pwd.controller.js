@@ -27,6 +27,7 @@ const getPING = async (req, res) => {
 
 const getById = async (req, res) => {
     try {
+        console.log("getById > ",req.params);
         const { id } = req.params;
         const connection = await getConnection();
         const result = await connection
@@ -320,13 +321,14 @@ const deleteCard = async (req,res) =>{
     }
 }
 
-const deleteEstatusPWD = async (req,res) =>{
+const deleteEstatusPWDByIdPWD = async (req,res) =>{
     try{
-        const { id_pwd } = req.params;
+        console.log("deleteEstatusPWD > ",req.params);
+        const { idpwd } = req.params;
         const connection = await getConnection();
         const result = await connection
         .request()
-        .input('id_pwd',id_pwd)
+        .input('idpwd',idpwd)
         .query(querys.deleteEstatusPWD);
         
         if(result.rowsAffected[0] === 0) return res.sendStatus(400);
@@ -355,5 +357,5 @@ export const methods = {
     updateCard,
     deletePwd,
     deleteCard,
-    deleteEstatusPWD
+    deleteEstatusPWDByIdPWD
 }

@@ -32,5 +32,5 @@ export const querys = {
     deletePwd: 'DELETE FROM dataPass WHERE id = @id',
     deleteCards: 'DELETE FROM dataCards WHERE id = @id',
     delUserAppPWD: 'DELETE FROM credenciales WHERE id = @id',
-    deleteEstatusPWD: 'DELETE FROM estatusPWD WHERE id_pwd = @id_pwd'
+    deleteEstatusPWD: 'DELETE FROM estatusPWD WHERE ID_PWD = @idpwd'
 }
