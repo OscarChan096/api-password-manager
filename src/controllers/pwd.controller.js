@@ -1,11 +1,11 @@
-import { getConnection, querys, sql } from './../database';
+import { parse } from 'dotenv';
+import { pool, querys } from './../database';
 
 // get
 const getPwds = async (req, res) => {
     try {
-        const connection = await getConnection();
-        const result = await connection.request().query(querys.getPwds);
-        res.json(result.recordset);
+        const result = await pool.query(querys.getPwds);
+        res.json(result.rows);
     } catch (error) {
         res.status(500);
         res.send(error.message);
@@ -14,10 +14,9 @@ const getPwds = async (req, res) => {
 
 const getPING = async (req, res) => {
     try {
-        const connection = await getConnection();
-        const result = await connection.request().query(querys.getPING);
-        res.json(result.recordset);
-        console.log("PING result:", result.recordset);
+        const result = await pool.query(querys.getPING);
+        res.json(result.rows);
+        console.log("PING result:", result.rows);
     } catch (error) {
         res.status(500);
         res.send(error.message);
@@ -29,12 +28,8 @@ const getById = async (req, res) => {
     try {
         console.log("getById > ",req.params);
         const { id } = req.params;
-        const connection = await getConnection();
-        const result = await connection
-            .request()
-            .input('id', id)
-            .query(querys.getById);
-        res.json(result.recordset[0]);
+        const result = await pool.query(querys.getById, [id]);
+        res.json(result.rows[0]);
     } catch (error) {
         res.status(500);
         res.send(error.message);
@@ -44,12 +39,8 @@ const getById = async (req, res) => {
 const getByTitle = async (req, res) => {
     try {
         const { title } = req.params;
-        const connection = await getConnection();
-        const result = await connection
-            .request()
-            .input('title', title+"%")
-            .query(querys.getByTitle);
-        res.json(result.recordset);
+        const result = await pool.query(querys.getByTitle, [title + "%"]);
+        res.json(result.rows);
     } catch (error) {
         res.status(500);
         res.send(error.message);
@@ -60,12 +51,8 @@ const getByUser = async (req, res) => {
     try {
         console.log("getByUser > ",req.params);
         const { user } = req.params;
-        const connection = await getConnection();
-        const result = await connection
-            .request()
-            .input('username', user+"%")
-            .query(querys.getByUser);
-        res.json(result.recordset);
+        const result = await pool.query(querys.getByUser, [user + "%"]);
+        res.json(result.rows);
     } catch (error) {
         res.status(500);
         res.send(error.message);
@@ -75,12 +62,8 @@ const getByUser = async (req, res) => {
 const getByNameBank = async (req, res) => {
     try {
         const { bank_name } = req.params;
-        const connection = await getConnection();
-        const result = await connection
-            .request()
-            .input('bank_name', bank_name)
-            .query(querys.getByNameBank);
-        res.json(result.recordset);
+        const result = await pool.query(querys.getByNameBank, [bank_name + "%"]);
+        res.json(result.rows);
     } catch (error) {
         res.status(500);
         res.send(error.message);
@@ -90,11 +73,8 @@ const getByNameBank = async (req, res) => {
 const getCards = async (req, res) => {
     //console.log(req.params);
     try {
-        const connection = await getConnection();
-        const result = await connection
-            .request()
-            .query(querys.getCards);
-        res.json(result.recordset);
+        const result = await pool.query(querys.getCards);
+        res.json(result.rows);
     } catch (error) {
         res.status(500);
         res.send(error.message);
@@ -104,12 +84,8 @@ const getCards = async (req, res) => {
 const getCardsById = async (req, res) => {
     try {
         const { id } = req.params;
-        const connection = await getConnection();
-        const result = await connection
-            .request()
-            .input('id', id)
-            .query(querys.getCardsByIdCards);
-        res.json(result.recordset[0]);
+        const result = await pool.query(querys.getCardsByIdCards, [id]);
+        res.json(result.rows[0]);
     } catch (error) {
         res.status(500);
         res.send(error.message);
@@ -120,12 +96,8 @@ const getUAPWD = async (req, res) => {
     //console.log("req:",req.params);
     try {
         const { userpwd } = req.params;
-        const connection = await getConnection();
-        const result = await connection
-            .request()
-            .input('userpwd', userpwd)
-            .query(querys.getUserAppPWD);
-        res.json(result.recordset[0]);
+        const result = await pool.query(querys.getUserAppPWD, [userpwd]);
+        res.json(result.rows[0]);
     } catch (error) {
         res.status(500);
         res.send(error.message);
@@ -134,9 +106,8 @@ const getUAPWD = async (req, res) => {
 
 const getEstatusPWD = async (req, res) => {
     try {
-        const connection = await getConnection();
-        const result = await connection.request().query(querys.getEstatusPWD);
-        res.json(result.recordset);
+        const result = await pool.query(querys.getEstatusPWD);
+        res.json(result.rows);
     } catch (error) {
         res.status(500);
         res.send(error.message);
@@ -153,15 +124,8 @@ const addPwd = async (req, res) => {
     }
 
     try {
-        const connection = await getConnection();
-        await connection
-            .request()
-            .input('title', sql.VarChar, TITLE)
-            .input('username', sql.VarChar, USERNAME)
-            .input('userpassword', sql.VarChar, USERPASSWORD)
-            .input('fechmodif',sql.VarChar, FECHMODIF)
-            .query(querys.addPwd);
-        res.json({ TITLE, USERNAME, USERPASSWORD, FECHMODIF });
+        let result = await pool.query(querys.addPwd, [TITLE, USERNAME, USERPASSWORD, FECHMODIF]);
+        res.json(result.rows[0]);
     } catch (error) {
         res.status(500);
         res.send(error.message);
@@ -172,8 +136,7 @@ const addCard = async (req, res) => {
     const { account_number, date, cvv, nip, app_user_name, app_password, type, id_bank } = req.body;
     let id_bank_aux = id_bank;
     let type_aux = type;
-    console.log(`# account: ${account_number} | date: ${date} | cvv: ${cvv} | nip: ${nip} | app_user_name: ${app_user_name} | app_password: ${app_password} | type: ${type} | id_bank: ${id_bank}********`);
-    //if (bank_name == null || account_number == null || date == null || cvv == null || nip == null) {
+    //console.log(`# account: ${account_number} | date: ${date} | cvv: ${cvv} | nip: ${nip} | app_user_name: ${app_user_name} | app_password: ${app_password} | type: ${type} | id_bank: ${id_bank}********`);
     if (account_number == null || date == null || cvv == null || nip == null) {
         return res.status(400).json({ msg: 'Bad request.' });
     }
@@ -183,20 +146,8 @@ const addCard = async (req, res) => {
     if (id_bank_aux == "" || id_bank_aux.length == 0) id_bank_aux = 1;
 
     try {
-        const connection = await getConnection();
-        await connection
-            .request()
-            //.input('bank_name', sql.VarChar, bank_name)
-            .input('account_number', sql.VarChar, account_number)
-            .input('date', sql.VarChar, date)
-            .input('cvv', sql.VarChar, cvv)
-            .input('nip', sql.VarChar, nip)
-            .input('app_user_name', sql.VarChar, app_user_name)
-            .input('app_password', sql.VarChar, app_password)
-            .input('type', sql.Int, parseInt(type_aux))
-            .input('id_bank', sql.Int, parseInt(id_bank_aux))
-            .query(querys.addCard);
-        res.json({ account_number, date, cvv, nip, app_user_name, app_password, type, id_bank })
+        let result = await pool.query(querys.addCard, [account_number, date, cvv, nip, app_user_name, app_password, parseInt(type_aux), parseInt(id_bank_aux)]);
+        res.json(result.rows[0]);
     } catch (error) {
         res.status(500);
         res.send(error.message);
@@ -209,15 +160,8 @@ const addEstatusPWD = async (req, res) => {
     const { ID_PWD, NUEVO, ACTUALIZADO, ELIMINADO } = req.body;
 
     try {
-        const connection = await getConnection();
-        await connection
-            .request()
-            .input('id_pwd', sql.Int, ID_PWD)
-            .input('nuevo', sql.Int, NUEVO)
-            .input('actualizado', sql.Int, ACTUALIZADO)
-            .input('eliminado',sql.Int, ELIMINADO)
-            .query(querys.addEstatusPWD);
-        res.json({ ID_PWD, NUEVO, ACTUALIZADO, ELIMINADO });
+        let result = await pool.qyery(querys.addEstatusPWD, [ID_PWD, NUEVO, ACTUALIZADO, ELIMINADO]);
+        res.json(result.rows[0]);
     } catch (error) {
         res.status(500);
         res.send(error.message);
@@ -233,16 +177,8 @@ const updatePwd = async (req,res) => {
     }
 
     try{
-        const connection = await getConnection();
-        await connection
-        .request()
-        .input('id',id)
-        .input('title',sql.VarChar,TITLE)
-        .input('username',sql.VarChar,USERNAME)
-        .input('userpassword',sql.VarChar,USERPASSWORD)
-        .input('fechmodif',sql.VarChar,FECHMODIF)
-        .query(querys.updatePwd);
-        res.json({TITLE,USERNAME,USERPASSWORD,FECHMODIF});
+        let result = await pool.query(querys.updatePwd, [TITLE, USERNAME, USERPASSWORD, FECHMODIF, id]);
+        res.json(result.rows[0]);
     }catch (error){
         res.status(500);
         res.send(error.message);
@@ -254,7 +190,7 @@ const updateCard = async (req,res) => {
     const { account_number, date, cvv, nip, app_user_name, app_password, type, id_bank } = req.body;
     let id_bank_aux = id_bank;
     let type_aux = type;
-    console.log(`********** account: ${account_number} | date: ${date} | cvv: ${cvv} | nip: ${nip} | app_user_name: ${app_user_name} | app_password: ${app_password} | type: ${type} | id_bank: ${id_bank}********`);
+    //console.log(`********** account: ${account_number} | date: ${date} | cvv: ${cvv} | nip: ${nip} | app_user_name: ${app_user_name} | app_password: ${app_password} | type: ${type} | id_bank: ${id_bank}********`);
     if (account_number == null || date == null || cvv == null || nip == null) {
         return res.status(400).json({ msg: 'Bad request.' });
     }
@@ -264,21 +200,8 @@ const updateCard = async (req,res) => {
     if (id_bank_aux == "" || id_bank_aux.length == 0) id_bank_aux = 1;
 
     try {
-        const connection = await getConnection();
-        await connection
-            .request()
-            .input('id',id)
-            // .input('bank_name', sql.VarChar, bank_name)
-            .input('account_number', sql.VarChar, account_number)
-            .input('date', sql.VarChar, date)
-            .input('cvv', sql.VarChar, cvv)
-            .input('nip', sql.VarChar, nip)
-            .input('app_user_name', sql.VarChar, app_user_name)
-            .input('app_password', sql.VarChar, app_password)
-            .input('type', sql.Int, parseInt(type_aux))
-            .input('id_bank', sql.Int, parseInt(id_bank_aux))
-            .query(querys.updateCard);
-        res.json({ account_number, date, cvv, nip, app_user_name, app_password, type, id_bank})
+        let result = await pool.query(querys.updateCard, [parseInt(id_bank_aux),account_number, date, cvv, nip, app_user_name, app_password, parseInt(type_aux), parseInt(id)]);
+        res.json(result.rows[0]);
     } catch (error) {
         res.status(500);
         res.send(error.message);
@@ -290,11 +213,7 @@ const updateCard = async (req,res) => {
 const deletePwd = async (req,res) =>{
     try{
         const { id } = req.params;
-        const connection = await getConnection();
-        const result = await connection
-        .request()
-        .input('id',id)
-        .query(querys.deletePwd);
+        const result = await pool.query(querys.deletePwd, [id]);
         
         if(result.rowsAffected[0] === 0) return res.sendStatus(400);
         return res.sendStatus(204);
@@ -307,11 +226,7 @@ const deletePwd = async (req,res) =>{
 const deleteCard = async (req,res) =>{
     try{
         const { id } = req.params;
-        const connection = await getConnection();
-        const result = await connection
-        .request()
-        .input('id',id)
-        .query(querys.deleteCards);
+        const result = await pool.query(querys.deleteCard, [id]);
         
         if(result.rowsAffected[0] === 0) return res.sendStatus(400);
         return res.sendStatus(204);
@@ -325,11 +240,7 @@ const deleteEstatusPWDByIdPWD = async (req,res) =>{
     try{
         console.log("deleteEstatusPWD > ",req.params);
         const { idpwd } = req.params;
-        const connection = await getConnection();
-        const result = await connection
-        .request()
-        .input('idpwd',idpwd)
-        .query(querys.deleteEstatusPWD);
+        const result = await pool.query(querys.deleteEstatusPWD, [idpwd]);
         
         if(result.rowsAffected[0] === 0) return res.sendStatus(400);
         return res.sendStatus(204);
