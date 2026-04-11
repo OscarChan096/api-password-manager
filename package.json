@@ -1,7 +1,7 @@
 {
   "name": "api-passwords",
   "version": "1.0.0",
-  "description": "get data in database sqlserver",
+  "description": "get data in database postgreSQL",
   "main": "index.js",
   "scripts": {
     "pwd": "babel-node --presets=@babel/preset-env",

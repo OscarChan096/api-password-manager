@@ -6,7 +6,8 @@ config();
 const { Pool } = pkg;
 
 const pool = new Pool({
-    user: process.env.USER,
+    //user: process.env.USER,
+    user: 'admin',
     password: process.env.PASSWORD,
     host: process.env.SERVER,   // en PostgreSQL se usa 'host' en lugar de 'server'
     database: process.env.DATABASE,
