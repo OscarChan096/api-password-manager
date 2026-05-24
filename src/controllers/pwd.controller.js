@@ -117,14 +117,14 @@ const getEstatusPWD = async (req, res) => {
 // post
 const addPwd = async (req, res) => {
     //console.log("REQ:",req);
-    const { TITLE, USERNAME, USERPASSWORD, FECHMODIF } = req.body;
+    const { title, username, userpassword, fechmodif } = req.body;
 
-    if (TITLE == null || USERPASSWORD == null) {
+    if (title == null || userpassword == null) {
         return res.status(400).json({ msg: 'Bad request.' });
     }
 
     try {
-        let result = await pool.query(querys.addPwd, [TITLE, USERNAME, USERPASSWORD, FECHMODIF]);
+        let result = await pool.query(querys.addPwd, [title, username, userpassword, fechmodif]);
         res.json(result.rows[0]);
     } catch (error) {
         res.status(500);
@@ -160,7 +160,7 @@ const addEstatusPWD = async (req, res) => {
     const { ID_PWD, NUEVO, ACTUALIZADO, ELIMINADO } = req.body;
 
     try {
-        let result = await pool.qyery(querys.addEstatusPWD, [ID_PWD, NUEVO, ACTUALIZADO, ELIMINADO]);
+        let result = await pool.query(querys.addEstatusPWD, [ID_PWD, NUEVO, ACTUALIZADO, ELIMINADO]);
         res.json(result.rows[0]);
     } catch (error) {
         res.status(500);
@@ -171,17 +171,19 @@ const addEstatusPWD = async (req, res) => {
 // put
 const updatePwd = async (req,res) => {
     const {id} = req.params;
-    const {TITLE,USERNAME,USERPASSWORD,FECHMODIF} = req.body;
-    if (TITLE == null || USERPASSWORD == null) {
+    const {title, username, userpassword, fechmodif} = req.body;
+    console.log(`req.body: ${JSON.stringify(req.body)}`);
+    if (title == null || userpassword == null) {
         return res.status(400).json({ msg: 'Bad request.' });
     }
 
     try{
-        let result = await pool.query(querys.updatePwd, [TITLE, USERNAME, USERPASSWORD, FECHMODIF, id]);
+        let result = await pool.query(querys.updatePwd, [title, username, userpassword, fechmodif, id]);
         res.json(result.rows[0]);
     }catch (error){
         res.status(500);
         res.send(error.message);
+        console.log("Error in updatePwd:", error.message);
     }
 }
 
