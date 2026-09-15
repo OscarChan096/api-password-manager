@@ -1,5 +1,6 @@
 import { parse } from 'dotenv';
 import { pool, querys } from './../database';
+import { encrypt, decrypt, toCipherNew } from '../utilities/cifrado';
 
 // get
 const getPwds = async (req, res) => {
@@ -114,17 +115,35 @@ const getEstatusPWD = async (req, res) => {
     }
 }
 
+const cipher = (req, res) => {
+    try{
+        //console.log('req: ',req.query);
+        const {data, tipo} = req.query;
+        if(tipo === '0'){
+            res.json(encrypt(data));
+        }
+
+        if(tipo === '1'){
+            res.json(decrypt(data));
+        }
+    }catch(error){
+        res.status(500);
+        res.send(error.message);
+    }
+}
+
 // post
 const addPwd = async (req, res) => {
-    //console.log("REQ:",req);
+    //console.log("REQ:",req.body);
     const { title, username, userpassword, fechmodif } = req.body;
 
     if (title == null || userpassword == null) {
-        return res.status(400).json({ msg: 'Bad request.' });
+        return res.status(400).json({ msg: 'complete los campos obligatorios' });
     }
 
     try {
-        let result = await pool.query(querys.addPwd, [title, username, userpassword, fechmodif]);
+        const titleLower = title.toLowerCase();
+        let result = await pool.query(querys.addPwd, [titleLower, username, userpassword, fechmodif]);
         res.json(result.rows[0]);
     } catch (error) {
         res.status(500);
@@ -252,6 +271,98 @@ const deleteEstatusPWDByIdPWD = async (req,res) =>{
     }
 }
 
+/**
+ * Migra todos los registros de dataPass y dataCards del cifrado antiguo
+ * (sustitución de caracteres) al nuevo cifrado AES-256-GCM.
+ *
+ * Llamar una sola vez via: POST /api/pwd/migrate/encryption
+ * Los campos que ya estén en el nuevo formato son omitidos sin tocarse.
+ */
+const migrateEncryption = async (req, res) => {
+    const results = {
+        dataPass: { migrated: 0, skipped: 0, errors: [] },
+        dataCards: { migrated: 0, skipped: 0, errors: [] },
+    };
+
+    try {
+        // ── dataPass ─────────────────────────────────────────────────────────
+        const passwdRows = await pool.query(querys.getPwds);
+
+        for (const row of passwdRows.rows) {
+            try {
+                const newUsername     = toCipherNew(row.username);
+                const newUserPassword = toCipherNew(row.userpassword);
+
+                // toCipherNew devuelve el mismo valor si ya está migrado
+                if (newUsername === row.username && newUserPassword === row.userpassword) {
+                    results.dataPass.skipped++;
+                    continue;
+                }
+
+                await pool.query(querys.updatePwd, [
+                    row.title,
+                    newUsername,
+                    newUserPassword,
+                    row.fechmodif,
+                    row.id,
+                ]);
+                results.dataPass.migrated++;
+            } catch (err) {
+                results.dataPass.errors.push({ id: row.id, error: err.message });
+            }
+        }
+
+        // ── dataCards ─────────────────────────────────────────────────────────
+        const cardRows = await pool.query(querys.getCards);
+
+        for (const row of cardRows.rows) {
+            try {
+                const newCvv         = toCipherNew(row.cvv);
+                const newNip         = toCipherNew(row.nip);
+                const newAppPassword = toCipherNew(row.app_password);
+
+                const alreadyMigrated =
+                    newCvv         === row.cvv &&
+                    newNip         === row.nip &&
+                    newAppPassword === row.app_password;
+
+                if (alreadyMigrated) {
+                    results.dataCards.skipped++;
+                    continue;
+                }
+
+                await pool.query(querys.updateCard, [
+                    row.id_bank,
+                    row.account_number,
+                    row.date,
+                    newCvv,
+                    newNip,
+                    row.app_user_name,
+                    newAppPassword,
+                    row.type,
+                    row.id,
+                ]);
+                results.dataCards.migrated++;
+            } catch (err) {
+                results.dataCards.errors.push({ id: row.id, error: err.message });
+            }
+        }
+
+        const hasErrors =
+            results.dataPass.errors.length > 0 ||
+            results.dataCards.errors.length > 0;
+
+        return res.status(hasErrors ? 207 : 200).json({
+            message: hasErrors
+                ? 'Migración completada con algunos errores.'
+                : 'Migración completada exitosamente.',
+            results,
+        });
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+};
+
 export const methods = {
     getPwds,
     getById,
@@ -270,5 +381,7 @@ export const methods = {
     updateCard,
     deletePwd,
     deleteCard,
-    deleteEstatusPWDByIdPWD
+    deleteEstatusPWDByIdPWD,
+    cipher,
+    migrateEncryption,
 }

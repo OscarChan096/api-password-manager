@@ -14,6 +14,10 @@ router.get('/bank/card/:id',pwdController.getCardsById);
 router.get('/uapwd/:userpwd',pwdController.getUAPWD);
 router.get('/get/ping',pwdController.getPING);
 router.get('/estatus/pwd',pwdController.getEstatusPWD);
+router.get('/data/cipher', pwdController.cipher);
+
+// migration (run once via Postman)
+router.post('/migrate/encryption', pwdController.migrateEncryption);
 
 // add data
 router.post('/',pwdController.addPwd);
