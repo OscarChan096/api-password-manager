@@ -236,7 +236,7 @@ const deletePwd = async (req,res) =>{
         const { id } = req.params;
         const result = await pool.query(querys.deletePwd, [id]);
         
-        if(result.rowsAffected[0] === 0) return res.sendStatus(400);
+        if(result.rowCount === 0) return res.sendStatus(400);
         return res.sendStatus(204);
     }catch(error){
         res.status(500);
@@ -247,9 +247,9 @@ const deletePwd = async (req,res) =>{
 const deleteCard = async (req,res) =>{
     try{
         const { id } = req.params;
-        const result = await pool.query(querys.deleteCard, [id]);
+        const result = await pool.query(querys.deleteCards, [id]);
         
-        if(result.rowsAffected[0] === 0) return res.sendStatus(400);
+        if(result.rowCount === 0) return res.sendStatus(400);
         return res.sendStatus(204);
     }catch(error){
         res.status(500);
@@ -263,7 +263,7 @@ const deleteEstatusPWDByIdPWD = async (req,res) =>{
         const { idpwd } = req.params;
         const result = await pool.query(querys.deleteEstatusPWD, [idpwd]);
         
-        if(result.rowsAffected[0] === 0) return res.sendStatus(400);
+        if(result.rowCount === 0) return res.sendStatus(400);
         return res.sendStatus(204);
     }catch(error){
         res.status(500);
